@@ -62,8 +62,3 @@ En la raíz del proyecto, ejecuta:
 Una vez que el servidor esté corriendo en tu máquina local, puedes explorar y probar todos los endpoints gráficamente ingresando a:
 `http://localhost:8080/api/v1/swagger-ui/index.html`
 
-## 🔒 Seguridad y Autenticación (Roadmap)
-Para efectos de este MVP (Producto Mínimo Viable) y para acelerar la integración fluida con la plataforma Low-Code, la validación de usuarios y control de acceso basado en roles (RBAC) se gestiona actualmente desde la capa de presentación (Frontend). 
-
-**Trabajo a futuro (Production-Ready):** 
-En la próxima iteración, la arquitectura está preparada para acoplar el módulo de **Spring Security con JWT (JSON Web Tokens)**. Esto permitirá que el Gateway valide los roles (`ARTESANO` o `CONFECCIONISTA`) a nivel de backend mediante un Bearer Token, garantizando que los endpoints críticos rechacen cualquier intento de modificación no autorizado (`403 Forbidden`).

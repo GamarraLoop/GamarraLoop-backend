@@ -1,3 +1,8 @@
+
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f2935b04-7516-4742-8ad1-7a65184d4b0d" alt="GamarraLoop" width="160" /> 
+</p>
+
 # GamarraLoop Backend API
 
 Este repositorio contiene el código fuente del backend para **GamarraLoop**, una plataforma móvil B2C diseñada para conectar talleres de confección con artesanos textiles en el emporio comercial de Gamarra (Lima, Perú), fomentando la economía circular mediante la reutilización de retazos de tela.

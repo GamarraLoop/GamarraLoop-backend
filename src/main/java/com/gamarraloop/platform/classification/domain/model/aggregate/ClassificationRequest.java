@@ -2,6 +2,7 @@ package com.gamarraloop.platform.classification.domain.model.aggregate;
 
 import com.gamarraloop.platform.classification.domain.model.commands.RequestClassificationCommand;
 import com.gamarraloop.platform.classification.domain.model.valueobjects.ClassificationStatus;
+import com.gamarraloop.platform.shared.domain.model.AuditableEntity;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -9,11 +10,7 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "classification_requests")
-public class ClassificationRequest {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class ClassificationRequest extends AuditableEntity {
 
     @Column(name = "lot_id", nullable = false)
     private UUID lotId;
@@ -64,9 +61,6 @@ public class ClassificationRequest {
         this.processedAt = Instant.now();
     }
 
-    public UUID getId() {
-        return id;
-    }
 
     public UUID getLotId() {
         return lotId;

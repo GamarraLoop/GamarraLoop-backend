@@ -1,39 +1,34 @@
 package com.gamarraloop.platform.expiration.application;
 
 import com.gamarraloop.platform.reservations.application.ports.input.ReservationCommandService;
-import com.gamarraloop.platform.reservations.infrastructure.persistence.jpa.ReservationRepository;
-import com.gamarraloop.platform.reservations.domain.model.valueobjects.ReservationStatus;
+import com.gamarraloop.platform.reservations.application.ports.input.ReservationQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.time.Instant;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class ExpirationScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(ExpirationScheduler.class);
-    private final ReservationRepository reservationRepository;
+    private final ReservationQueryService reservationQueryService;
     private final ReservationCommandService reservationCommandService;
 
-    public ExpirationScheduler(ReservationRepository reservationRepository,
+    public ExpirationScheduler(ReservationQueryService reservationQueryService,
                                ReservationCommandService reservationCommandService) {
-        this.reservationRepository = reservationRepository;
+        this.reservationQueryService = reservationQueryService;
         this.reservationCommandService = reservationCommandService;
     }
 
-    // Run every minute
     @Scheduled(cron = "0 * * * * *")
+    @Transactional
     public void expireOldReservations() {
         logger.info("Checking for expired reservations...");
-        
-        var activeReservations = reservationRepository.findAll().stream()
-                .filter(r -> r.getStatus() == ReservationStatus.ACTIVE)
-                .filter(r -> r.getExpiresAt() != null && r.getExpiresAt().isBefore(Instant.now()))
-                .toList();
 
-        for (var reservation : activeReservations) {
+        var expiredReservations = reservationQueryService.getExpiredActiveReservations();
+
+        for (var reservation : expiredReservations) {
             try {
                 reservationCommandService.expire(reservation.getId());
                 logger.info("Successfully expired reservation {}", reservation.getId());

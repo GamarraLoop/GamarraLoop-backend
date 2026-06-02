@@ -12,9 +12,6 @@ import java.util.UUID;
 @Table(name = "deliveries")
 public class DeliveryProcess extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     @Column(nullable = false)
     private UUID reservationId;
@@ -28,7 +25,7 @@ public class DeliveryProcess extends AuditableEntity {
 
     private Instant completedAt;
 
-    public DeliveryProcess() {
+    protected DeliveryProcess() {
         // Required by JPA
     }
 
@@ -39,18 +36,21 @@ public class DeliveryProcess extends AuditableEntity {
     }
 
     public void complete() {
+        if (this.status != DeliveryStatus.IN_TRANSIT) {
+            throw new IllegalStateException("Only IN_TRANSIT deliveries can be completed. Current status: " + this.status);
+        }
         this.status = DeliveryStatus.DELIVERED;
         this.completedAt = Instant.now();
     }
 
     public void fail() {
+        if (this.status != DeliveryStatus.IN_TRANSIT) {
+            throw new IllegalStateException("Only IN_TRANSIT deliveries can be failed. Current status: " + this.status);
+        }
         this.status = DeliveryStatus.FAILED;
         this.completedAt = Instant.now();
     }
 
-    public UUID getId() {
-        return id;
-    }
 
     public UUID getReservationId() {
         return reservationId;

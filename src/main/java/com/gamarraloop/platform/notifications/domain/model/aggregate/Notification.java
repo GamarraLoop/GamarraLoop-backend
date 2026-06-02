@@ -4,7 +4,7 @@ import com.gamarraloop.platform.notifications.domain.model.commands.CreateNotifi
 import com.gamarraloop.platform.shared.domain.model.AuditableEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -16,8 +16,6 @@ import java.util.UUID;
 @Table(name = "notifications")
 public class Notification extends AuditableEntity {
 
-    @Id
-    private UUID id;
 
     @NotNull
     @Column(name = "user_id", nullable = false)
@@ -36,11 +34,11 @@ public class Notification extends AuditableEntity {
     @Column(name = "is_read", nullable = false)
     private Boolean isRead;
 
-    public Notification() {
+    protected Notification() {
     }
 
     public Notification(CreateNotificationCommand command) {
-        this.id = UUID.randomUUID();
+
         this.userId = command.userId();
         this.title = command.title();
         this.message = command.message();
@@ -51,9 +49,6 @@ public class Notification extends AuditableEntity {
         this.isRead = true;
     }
 
-    public UUID getId() {
-        return id;
-    }
 
     public UUID getUserId() {
         return userId;

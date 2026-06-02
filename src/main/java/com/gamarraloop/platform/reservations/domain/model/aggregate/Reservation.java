@@ -13,9 +13,6 @@ import java.util.UUID;
 @Table(name = "reservations")
 public class Reservation extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     @NotNull
     @Column(name = "lot_id", nullable = false)
@@ -35,7 +32,7 @@ public class Reservation extends AuditableEntity {
     @Column(name = "expires_at")
     private Instant expiresAt;
 
-    public Reservation() {
+    protected Reservation() {
         // JPA requires default constructor
     }
 
@@ -48,20 +45,26 @@ public class Reservation extends AuditableEntity {
     }
 
     public void complete() {
+        if (this.status != ReservationStatus.ACTIVE) {
+            throw new IllegalStateException("Only ACTIVE reservations can be completed. Current status: " + this.status);
+        }
         this.status = ReservationStatus.COMPLETED;
     }
 
     public void cancel() {
+        if (this.status != ReservationStatus.ACTIVE) {
+            throw new IllegalStateException("Only ACTIVE reservations can be cancelled. Current status: " + this.status);
+        }
         this.status = ReservationStatus.CANCELLED;
     }
 
     public void expire() {
+        if (this.status != ReservationStatus.ACTIVE) {
+            throw new IllegalStateException("Only ACTIVE reservations can be expired. Current status: " + this.status);
+        }
         this.status = ReservationStatus.EXPIRED;
     }
 
-    public UUID getId() {
-        return id;
-    }
 
     public UUID getLotId() {
         return lotId;

@@ -10,4 +10,5 @@ public interface ReservationQueryService {
     Optional<Reservation> getById(UUID id);
     List<Reservation> getByLotId(UUID lotId);
     List<Reservation> getByArtisanId(UUID artisanId);
+    List<Reservation> getExpiredActiveReservations();
 }

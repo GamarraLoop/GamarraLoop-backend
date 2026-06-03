@@ -60,9 +60,9 @@ public class UserProfileController {
         return ResponseEntity.ok(userProfileResources);
     }
 
-    @PostMapping("/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserProfileResource> updateUserProfile(@PathVariable UUID id,
-                                                                 @RequestBody UpdateUserProfileResource resource) {
+                                                                 @Valid @RequestBody UpdateUserProfileResource resource) {
         var command = new UpdateUserProfileCommand(resource.fullName(), resource.email(), resource.phone());
         var userProfile = userProfileCommandService.update(id, command);
         var userProfileResource = UserProfileResourceFromEntityAssembler.toResourceFromEntity(userProfile);

@@ -329,7 +329,15 @@ $env:PORT="9090"   # por defecto: 8080
 
 ## 📖 Documentación de la API (Swagger)
 
-Una vez que el servidor esté corriendo, accede a la documentación interactiva:
+### Entorno de Producción (Azure)
+El backend está desplegado en Azure App Service y activo 24/7. Puedes acceder a la documentación interactiva de la API en producción aquí:
+[https://gamarraloop-e3f8a6dmaah4gdae.eastus-01.azurewebsites.net/api/v1/swagger-ui/index.html](https://gamarraloop-e3f8a6dmaah4gdae.eastus-01.azurewebsites.net/api/v1/swagger-ui/index.html)
+
+**URL Base de la API en Producción:**
+`https://gamarraloop-e3f8a6dmaah4gdae.eastus-01.azurewebsites.net/api/v1`
+
+### Entorno Local
+Una vez que el servidor local esté corriendo, accede a la documentación interactiva:
 
 ```
 http://localhost:8080/api/v1/swagger-ui/index.html

@@ -86,6 +86,29 @@ public class Lot extends AuditableEntity {
         this.status = LotStatus.RESERVED;
     }
 
+    /** Devuelve un lote reservado a disponible (cancelación o expiración de la reserva). */
+    public void release() {
+        if (this.status != LotStatus.RESERVED) {
+            throw new IllegalStateException("Lot can only be released from RESERVED status. Current status: " + this.status);
+        }
+        this.status = LotStatus.PUBLISHED;
+    }
+
+    /** Marca el lote como recogido tras confirmar la entrega física. */
+    public void markPickedUp() {
+        if (this.status != LotStatus.RESERVED) {
+            throw new IllegalStateException("Lot can only be picked up from RESERVED status. Current status: " + this.status);
+        }
+        this.status = LotStatus.PICKED_UP;
+    }
+
+    /** Sobrescribe el tipo de textil con el inferido por IA (solo si es un valor útil). */
+    public void applyInferredTextileType(String inferredType) {
+        if (inferredType != null && !inferredType.isBlank()) {
+            this.textileType = inferredType;
+        }
+    }
+
     public void updateDetails(UpdateLotCommand cmd) {
         if (this.status != LotStatus.DRAFT) {
             throw new IllegalStateException("Lot details can only be updated in DRAFT status. Current status: " + this.status);

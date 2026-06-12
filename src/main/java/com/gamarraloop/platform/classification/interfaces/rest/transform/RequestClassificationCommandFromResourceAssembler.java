@@ -7,8 +7,8 @@ public class RequestClassificationCommandFromResourceAssembler {
 
     public static RequestClassificationCommand toCommandFromResource(RequestClassificationResource resource) {
         return new RequestClassificationCommand(
-                resource.lotId(),
                 resource.imageUrl()
         );
     }
 }
+

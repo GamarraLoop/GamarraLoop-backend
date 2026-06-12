@@ -4,6 +4,7 @@ import com.gamarraloop.platform.reservations.application.ports.input.Reservation
 import com.gamarraloop.platform.reservations.domain.model.aggregate.Reservation;
 import com.gamarraloop.platform.reservations.domain.model.commands.CreateReservationCommand;
 import com.gamarraloop.platform.reservations.domain.model.valueobjects.ReservationStatus;
+import com.gamarraloop.platform.lots.application.ports.input.LotCommandService;
 import com.gamarraloop.platform.reservations.infrastructure.persistence.jpa.ReservationRepository;
 import com.gamarraloop.platform.shared.domain.exceptions.ResourceNotFoundException;
 import org.springframework.stereotype.Service;
@@ -15,9 +16,12 @@ import java.util.UUID;
 public class ReservationCommandServiceImpl implements ReservationCommandService {
 
     private final ReservationRepository reservationRepository;
+    private final LotCommandService lotCommandService;
 
-    public ReservationCommandServiceImpl(ReservationRepository reservationRepository) {
+    public ReservationCommandServiceImpl(ReservationRepository reservationRepository,
+                                         LotCommandService lotCommandService) {
         this.reservationRepository = reservationRepository;
+        this.lotCommandService = lotCommandService;
     }
 
     @Override
@@ -31,7 +35,13 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         }
 
         Reservation reservation = new Reservation(command);
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+
+        // Transición del lote PUBLISHED -> RESERVED dentro de la misma transacción.
+        // Si el lote no está PUBLISHED, markReserved lanza y revierte la reserva completa.
+        lotCommandService.markReserved(command.lotId());
+
+        return saved;
     }
 
     @Override
@@ -40,7 +50,10 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation", id));
         reservation.complete();
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        // El artesano confirmó la recepción física: el lote queda PICKED_UP.
+        lotCommandService.markPickedUp(reservation.getLotId());
+        return saved;
     }
 
     @Override
@@ -49,7 +62,10 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation", id));
         reservation.cancel();
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        // Reserva cancelada: el lote vuelve a estar disponible.
+        lotCommandService.release(reservation.getLotId());
+        return saved;
     }
 
     @Override
@@ -58,6 +74,9 @@ public class ReservationCommandServiceImpl implements ReservationCommandService 
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reservation", id));
         reservation.expire();
-        return reservationRepository.save(reservation);
+        Reservation saved = reservationRepository.save(reservation);
+        // Reserva expirada: el lote vuelve a estar disponible.
+        lotCommandService.release(reservation.getLotId());
+        return saved;
     }
 }

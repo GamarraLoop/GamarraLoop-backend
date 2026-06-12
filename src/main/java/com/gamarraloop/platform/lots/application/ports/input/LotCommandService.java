@@ -11,4 +11,8 @@ public interface LotCommandService {
     Lot update(UUID id, UpdateLotCommand command);
     Lot publish(UUID id);
     Lot withdraw(UUID id);
+    Lot markReserved(UUID id);
+    Lot release(UUID id);
+    Lot markPickedUp(UUID id);
+    void delete(UUID id, UUID publisherId);
 }

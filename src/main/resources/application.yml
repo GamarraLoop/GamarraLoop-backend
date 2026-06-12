@@ -1,4 +1,10 @@
 spring:
+  # Carga variables locales desde .env (gitignored) sin depender del IDE ni de
+  # variables de entorno del sistema. `optional:` → no falla si el archivo no
+  # existe (p. ej. en CI/otra máquina), cayendo en las env vars / defaults.
+  config:
+    import: "optional:file:.env[.properties]"
+
   application:
     name: gamarraloop-platform
 

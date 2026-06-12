@@ -30,6 +30,11 @@ public class UserProfile extends AuditableEntity {
     }
 
     public UserProfile(CreateUserProfileCommand command) {
+        // El id viene del cliente (uid de Supabase Auth) para satisfacer la
+        // FK user_profiles.id -> auth.users.id y mantener login coherente.
+        if (command.id() != null && !command.id().isBlank()) {
+            setId(java.util.UUID.fromString(command.id()));
+        }
         this.fullName = command.fullName();
         this.email = command.email();
         this.phone = command.phone();

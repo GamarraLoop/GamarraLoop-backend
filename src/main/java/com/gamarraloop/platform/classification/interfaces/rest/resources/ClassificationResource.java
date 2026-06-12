@@ -4,12 +4,11 @@ import java.util.UUID;
 
 public record ClassificationResource(
         UUID id,
-        UUID lotId,
         String imageUrl,
         String status,
-        String labels,
-        String failureReason,
-        String requestedAt,
-        String processedAt
+        String aiDescription,
+        String aiTextileType,
+        // Confianza de la etiqueta principal de Vision (0.0 a 1.0).
+        double aiConfidence
 ) {
 }

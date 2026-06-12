@@ -5,6 +5,7 @@ import com.gamarraloop.platform.lots.application.ports.input.LotQueryService;
 import com.gamarraloop.platform.lots.domain.model.aggregate.Lot;
 import com.gamarraloop.platform.lots.interfaces.rest.resources.CreateLotResource;
 import com.gamarraloop.platform.lots.interfaces.rest.resources.LotResource;
+import com.gamarraloop.platform.lots.interfaces.rest.resources.LotSummaryResource;
 import com.gamarraloop.platform.lots.interfaces.rest.resources.UpdateLotResource;
 import com.gamarraloop.platform.lots.interfaces.rest.transform.CreateLotCommandFromResourceAssembler;
 import com.gamarraloop.platform.lots.interfaces.rest.transform.LotResourceFromEntityAssembler;
@@ -48,23 +49,33 @@ public class LotController {
 
     @GetMapping
     public ResponseEntity<List<LotResource>> getLots(
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) UUID publisherId) {
+            @RequestParam(required = false, defaultValue = "") String status,
+            @RequestParam(required = false, defaultValue = "") String publisherId,
+            @RequestParam(required = false, defaultValue = "") String textileType) {
 
-        List<Lot> lots;
+        String effectiveStatus = status.isBlank() ? null : status;
+        UUID effectivePubId = publisherId.isBlank() ? null : UUID.fromString(publisherId);
+        String effectiveTextileType = textileType.isBlank() ? null : textileType;
 
-        if (status != null) {
-            lots = lotQueryService.getByStatus(status);
-        } else if (publisherId != null) {
-            lots = lotQueryService.getByPublisherId(publisherId);
-        } else {
-            lots = lotQueryService.getAll();
-        }
+        List<Lot> lots = lotQueryService.search(effectiveStatus, effectivePubId, effectiveTextileType);
 
         var lotResources = lots.stream()
                 .map(LotResourceFromEntityAssembler::toResourceFromEntity)
                 .toList();
         return ResponseEntity.ok(lotResources);
+    }
+
+    /**
+     * Dashboard del Confeccionista: conteo de lotes por estado para un publicador.
+     * Evita que la app baje toda la lista solo para contarla.
+     */
+    @GetMapping("/summary/publisher/{publisherId}")
+    public ResponseEntity<LotSummaryResource> getSummaryForPublisher(@PathVariable UUID publisherId) {
+        long disponibles = lotQueryService.countByPublisherAndStatus(publisherId, "PUBLISHED");
+        long reservados  = lotQueryService.countByPublisherAndStatus(publisherId, "RESERVED");
+        long entregados  = lotQueryService.countByPublisherAndStatus(publisherId, "PICKED_UP");
+        long total = disponibles + reservados + entregados;
+        return ResponseEntity.ok(new LotSummaryResource(disponibles, reservados, entregados, total));
     }
 
     @PutMapping("/{id}")
@@ -87,5 +98,12 @@ public class LotController {
         var lot = lotCommandService.withdraw(id);
         var lotResource = LotResourceFromEntityAssembler.toResourceFromEntity(lot);
         return ResponseEntity.ok(lotResource);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteLot(@PathVariable UUID id,
+                                          @RequestParam UUID publisherId) {
+        lotCommandService.delete(id, publisherId);
+        return ResponseEntity.noContent().build();
     }
 }

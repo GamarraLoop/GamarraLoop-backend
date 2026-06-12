@@ -41,7 +41,8 @@ public class Reservation extends AuditableEntity {
         this.artisanId = command.artisanId();
         this.status = ReservationStatus.ACTIVE;
         this.reservedAt = Instant.now();
-        this.expiresAt = this.reservedAt.plus(24, ChronoUnit.HOURS);
+        // US21: el artesano tiene 48 horas para retirar el lote tras reservar.
+        this.expiresAt = this.reservedAt.plus(48, ChronoUnit.HOURS);
     }
 
     public void complete() {

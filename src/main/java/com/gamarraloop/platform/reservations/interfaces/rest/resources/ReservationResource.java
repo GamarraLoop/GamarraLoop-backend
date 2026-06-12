@@ -10,5 +10,9 @@ public record ReservationResource(
     String reservedAt,
     String expiresAt,
     String createdAt,
-    String updatedAt
+    String updatedAt,
+    // Datos del lote asociado (join), para que la app muestre algo legible en vez del UUID.
+    String lotTitle,
+    String lotTextileType,
+    String lotPickupAddress
 ) {}

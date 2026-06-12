@@ -7,6 +7,7 @@ public class CreateUserProfileCommandFromResourceAssembler {
 
     public static CreateUserProfileCommand toCommandFromResource(CreateUserProfileResource resource) {
         return new CreateUserProfileCommand(
+                resource.id(),
                 resource.fullName(),
                 resource.email(),
                 resource.phone(),

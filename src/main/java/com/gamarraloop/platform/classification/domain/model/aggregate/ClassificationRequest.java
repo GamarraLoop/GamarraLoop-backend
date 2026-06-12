@@ -12,7 +12,7 @@ import java.util.UUID;
 @Table(name = "classification_requests")
 public class ClassificationRequest extends AuditableEntity {
 
-    @Column(name = "lot_id", nullable = false)
+    @Column(name = "lot_id", nullable = true)
     private UUID lotId;
 
     @Column(name = "image_url", nullable = false, length = 500)
@@ -39,7 +39,6 @@ public class ClassificationRequest extends AuditableEntity {
     }
 
     public ClassificationRequest(RequestClassificationCommand command) {
-        this.lotId = command.lotId();
         this.imageUrl = command.imageUrl();
         this.status = ClassificationStatus.PENDING;
         this.requestedAt = Instant.now();

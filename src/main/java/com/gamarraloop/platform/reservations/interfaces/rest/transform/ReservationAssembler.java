@@ -19,6 +19,13 @@ public class ReservationAssembler {
     }
 
     public static ReservationResource toResourceFromEntity(Reservation entity) {
+        return toResourceFromEntity(entity, null, null, null);
+    }
+
+    public static ReservationResource toResourceFromEntity(Reservation entity,
+                                                           String lotTitle,
+                                                           String lotTextileType,
+                                                           String lotPickupAddress) {
         return new ReservationResource(
                 entity.getId(),
                 entity.getLotId(),
@@ -27,7 +34,10 @@ public class ReservationAssembler {
                 entity.getReservedAt() != null ? entity.getReservedAt().toString() : null,
                 entity.getExpiresAt() != null ? entity.getExpiresAt().toString() : null,
                 entity.getCreatedAt() != null ? entity.getCreatedAt().toString() : null,
-                entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null
+                entity.getUpdatedAt() != null ? entity.getUpdatedAt().toString() : null,
+                lotTitle,
+                lotTextileType,
+                lotPickupAddress
         );
     }
 }

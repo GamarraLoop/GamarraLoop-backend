@@ -11,4 +11,10 @@ public interface LotQueryService {
     List<Lot> getAll();
     List<Lot> getByStatus(String status);
     List<Lot> getByPublisherId(UUID publisherId);
+
+    /** Lista lotes aplicando filtros opcionales (cualquiera puede ser null). */
+    List<Lot> search(String status, UUID publisherId, String textileType);
+
+    /** Conteo de lotes de un publicador, agrupado por estado. */
+    long countByPublisherAndStatus(UUID publisherId, String status);
 }

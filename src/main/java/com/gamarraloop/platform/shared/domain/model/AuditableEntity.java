@@ -17,6 +17,7 @@ public abstract class AuditableEntity extends AggregateRoot {
 
     @PrePersist
     protected void onCreate() {
+        super.ensureId();   // garantiza que el id quede asignado antes del INSERT
         this.createdAt = Instant.now();
         this.updatedAt = Instant.now();
     }

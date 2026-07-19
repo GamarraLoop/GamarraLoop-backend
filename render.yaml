@@ -1,0 +1,23 @@
+# Blueprint de Render — despliega el backend de GamarraLoop como servicio web Docker.
+# Al conectar el repo en Render (New > Blueprint), lee este archivo automáticamente.
+# Los secrets van con `sync: false`: Render los pedirá una sola vez en el dashboard
+# (no se versionan en git).
+services:
+  - type: web
+    name: gamarraloop-backend
+    runtime: docker
+    plan: free
+    region: virginia          # us-east, la región free más cercana a Perú
+    branch: main
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_USER
+        sync: false
+      - key: DATABASE_PASSWORD
+        sync: false
+      - key: VISION_API_KEY
+        sync: false

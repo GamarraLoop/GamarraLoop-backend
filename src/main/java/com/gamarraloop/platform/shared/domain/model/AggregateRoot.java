@@ -14,7 +14,7 @@ public abstract class AggregateRoot {
     private UUID id;
 
     @PrePersist
-    protected void ensureId() {
+    public void ensureId() {
         if (id == null) {
             id = UUID.randomUUID();
         }
